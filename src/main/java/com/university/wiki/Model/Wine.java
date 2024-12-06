@@ -32,6 +32,23 @@ public class Wine {
         this.quality = quality;
     }
 
+    public double[] toArray() {
+        return new double[]{
+                fixedAcidity, volatileAcidity, citricAcid, residualSugar, chlorides,
+                freeSulfurDioxide, totalSulfurDioxide, density, pH, sulphates, alcohol
+        };
+    }
+
+    public static Wine fromArray(double[] features, int quality) {
+        if (features.length != 11) {
+            throw new IllegalArgumentException("Входящий вектор должен иметь размер 11");
+        }
+        return new Wine(features[0], features[1], features[2], features[3],
+                features[4], features[5], features[6], features[7],
+                features[8], features[9], features[10], quality);
+    }
+
+
 
     public double getFixedAcidity() {
         return fixedAcidity;

@@ -3,12 +3,22 @@ package com.university.wiki;
 import java.util.Random;
 
 public class Node {
-    private final int x, y;
-    private final double[] weights;
+    public final int x, y;
+    public final double[] weights;
 
-    public Node(int inputSize, Random random) {
-        this.x = random.nextInt(); // Set x, y positions based on SOM initialization
-        this.y = random.nextInt();
+    private String assignedClass;
+
+    public String getAssignedClass() {
+        return assignedClass;
+    }
+
+    public void setAssignedClass(String assignedClass) {
+        this.assignedClass = assignedClass;
+    }
+
+    public Node(int x, int  y, int inputSize, Random random) {
+        this.x = x;
+        this.y = y;
         this.weights = new double[inputSize];
         for (int i = 0; i < inputSize; i++) {
             weights[i] = random.nextDouble();
