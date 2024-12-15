@@ -2,10 +2,7 @@ package com.university.wiki;
 
 import com.university.wiki.File.DatasetReader;
 import com.university.wiki.File.FileHelper;
-import com.university.wiki.Model.KohonenMap;
-import com.university.wiki.Model.KohonenMapPostProcessing;
-import com.university.wiki.Model.Normalizer;
-import com.university.wiki.Model.Wine;
+import com.university.wiki.Model.*;
 
 import java.io.IOException;
 import java.net.URL;
@@ -29,20 +26,28 @@ public class Main {
 
         List<Wine> normalizedWines = Normalizer.normalize(wines);
         System.out.println("Normalized Wines:");
-        printWines(normalizedWines);
 
-        // Создаём карту Кохонена размером 10x10 с 11 признаками
-        KohonenMap map = new KohonenMap(10, 10, 11);
         double[][] normalizedData = new double[normalizedWines.size()][];
         for (int i = 0; i < normalizedWines.size(); i++) {
             Wine wine = normalizedWines.get(i);
             normalizedData[i] =  wine.toArray();
         }
+        StatHelper.checkFeatureRanges(normalizedData);
+        StatHelper.checkFeatureStats(normalizedData);
+
+
+        // printWines(normalizedWines);
+
+        // Создаём карту Кохонена размером 10x10 с 11 признаками
+        KohonenMap map = new KohonenMap(10, 10, 11,  500);
+
         // Обучаем карту
-        map.train(normalizedData, 500, 0.2, 2);
+        map.train(normalizedData, 1, 0.2);
         List<Double> distances = map.computeNeighborDistances();
-
-
+        for (Double distance : distances) {
+            System.out.println(distance);
+        }
+//
         double minDistance = distances.stream().min(Double::compare).orElse(Double.NaN);
         double maxDistance = distances.stream().max(Double::compare).orElse(Double.NaN);
         double avgDistance = distances.stream().mapToDouble(Double::doubleValue).average().orElse(Double.NaN);
@@ -62,9 +67,12 @@ public class Main {
         System.out.println("Среднее расстояние: " + avgDistance);
         System.out.println("Медиана: " + median);
 
-        KohonenMapPostProcessing clustering = new KohonenMapPostProcessing(map, median);
-        Map<Integer, List<Node>> clusters =  clustering.createClusters();
-        clustering.printClusters(clusters);
+        map.assignClusterLabels(median);
+        map.printClusterLabels();
+//
+//        KohonenMapPostProcessing clustering = new KohonenMapPostProcessing(map, median);
+//        Map<Integer, List<Node>> clusters =  clustering.createClusters();
+//        clustering.printClusters(clusters);
 
 
         System.out.println("Карта обучена!");
